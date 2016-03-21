@@ -1,4 +1,3 @@
-from board import Tile
 
 class Ship:
     sunk_state = False
@@ -10,11 +9,5 @@ class Ship:
     def __str__(self):
         print("Ship name: {}".format(self.name))
 
-    def isSunk(self):
-        hp = len(location)
-        for tile in location:
-            if tile.hit_state:
-                hp -= 1
-        if hp == 0:
-            return True
-        return False
+    def get_location(self):
+        return self.location
