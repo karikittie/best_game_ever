@@ -25,3 +25,21 @@ class Player(object):
             return True
         else:
             return False
+
+    def get_fired_upon(self, location):
+        return self.board.fire(location)
+
+    def update_ships_status(self):
+        for ship in self.ships:
+            sunk = True
+            for location in ship.location:
+                if not self.board.get_index(location).is_hit:
+                    sunk = False
+            if sunk:
+                ship.sunk_state = True
+
+    def is_game_over(self):
+        for ship in self.ships:
+            if not ship.sunk_state:
+                return False
+        return True
