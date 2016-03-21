@@ -60,3 +60,10 @@ class Board(object):
 
     def get_index(self, index):
         return self.board[index][1]
+
+    def build_row(self, row):
+        if row > (self.max_y-1):
+            return False
+        for i in range(self.max_x):
+            print(self.board[i+(self.max_x*row)][1])
+        return True

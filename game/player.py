@@ -43,3 +43,6 @@ class Player(object):
             if not ship.sunk_state:
                 return False
         return True
+
+    def build_row(self, row):
+        return self.board.build_row(row)
