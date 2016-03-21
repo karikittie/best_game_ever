@@ -5,16 +5,16 @@ from ship import Ship
 class Player(object):
     ships = []
 
-    def __init__(self, board_size, **kwargs):
+    def __init__(self, board_size=(10,10), **kwargs):
         self.board = Board(board_size)
         self.name = 'No Name'
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def place_ships(self, size, location, direction, name):
-        if direction == 'n':
+        if direction == 's':
             locations = [(location[0], y) for y in range(location[1], location[1]+size)]
-        elif direction == 's':
+        elif direction == 'n':
             locations = [(location[0], location[1]-y) for y in range(size)]
         elif direction == 'e':
             locations = [(x, location[1]) for x in range(location[0], location[0]+size)]
@@ -44,5 +44,5 @@ class Player(object):
                 return False
         return True
 
-    def build_row(self, row):
-        return self.board.build_row(row)
+    def build_row(self, is_me, row):
+        return self.board.build_row(is_me, row)

@@ -4,32 +4,34 @@ class Tile(object):
         self.is_hit = False
 
     def show_other(self):
-        logo = 'O'
+        logo = ' '
         if self.is_hit and self.is_occupied:
             logo = '&'
         elif self.is_hit:
-            logo = 'X'
-        print("|{}|".format(logo))
+            logo = '*'
+        return "|{}".format(logo)
 
     def show_me(self):
-        logo = 'O'
+        logo = ' '
         if self.is_hit and self.is_occupied:
             logo = '&'
         elif self.is_hit and not self.is_occupied:
             logo = '*'
         elif self.is_occupied:
             logo = 'X'
-        print("|{}|".format(logo))
+        return "|{}".format(logo)
 
 
 class Board(object):
-    def __init__(self, board_size=(10,10)):
+    def __init__(self, board_size):
         self.x_max = board_size[0]
         self.y_max = board_size[1]
         self.board = [[(x, y), Tile()] for x in range(board_size[0]) for y in range(board_size[1])]
 
     def place_ship(self, locations):
         for location in locations:
+            if location[0] < 0 or location[1] < 0:
+                return None
             if location[0] >= self.x_max or location[1] >= self.y_max:
                 return None
             index = location[1] * self.x_max + location[0]
@@ -43,9 +45,9 @@ class Board(object):
         return tile_list
 
     def fire(self, location):
-        if location[0] >= self.x_max:
+        if location[0] >= self.x_max or location[1] >= self.y_max:
             return 2
-        elif location[1] >= self.y_max:
+        if location[0] < 0 or location[1] < 0:
             return 2
         index = location[1] * self.x_max + location[0]
         board_tile = self.board[index][1]
@@ -58,12 +60,21 @@ class Board(object):
             board_tile.is_hit = True
             return 0
 
-    def get_index(self, index):
-        return self.board[index][1]
+    def get_index(self, location):
+        index = location[0] + location[1] * self.y_max
+        try:
+            return self.board[index][1]
+        except:
+            return None
 
-    def build_row(self, row):
-        if row > (self.max_y-1):
+    def build_row(self, is_me, row):
+        if row > (self.y_max-1):
             return False
-        for i in range(self.max_x):
-            print(self.board[i+(self.max_x*row)][1])
-        return True
+        string_return = ''
+        for i in range(self.x_max):
+            if is_me:
+                self.board[i+(self.x_max*row)][1].show_me()
+            else:
+                string_return += self.board[i+(self.x_max*row)][1].show_other()
+        string_return += '|'
+        return string_return
