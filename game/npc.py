@@ -16,10 +16,10 @@ class NPC(Player):
     def generate_ship_placement(self, ships_list):
         for ship in ships_list:
             while True:
-                if self.place_ships(ship[1],
-                                    (random.randint(0, self.x_max),random.randint(0, self.y_max)),
-                                    random.choice('nsew'),
-                                    ship[0]):
+                if self.place_ship(ship[1],
+                                  (random.randint(0, self.x_max),random.randint(0, self.y_max)),
+                                  random.choice('nsew'),
+                                  ship[0]):
                     break
 
     def fire(self):

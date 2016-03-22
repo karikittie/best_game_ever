@@ -8,14 +8,17 @@ class Game:
         self.players = [player1,player2]
 
     def convert_coordinates(self, buffer):
-        return tuple([buffer[1], ord(buffer[0])-97])
+        x = int(buffer[1:]) - 1
+        y = ord(buffer[0])-97
+        return tuple([x, y])
 
     #TODO: draw column/row headers
     def draw_board(self, player, player2=None):
         for idx in range(10):
-            player.build_row(idx)
+            cur_row = player.build_row(True, idx)
             if player2:
-                player2.build_row(idx)
+                cur_row += " {}".format(player2.build_row(False, idx))
+            print("{}".format(cur_row))
 
     def set_ships(self, player):
         ships = [tuple(['carrier', 5]),
@@ -40,10 +43,24 @@ class Game:
                     print("Invalid placement")
 
     def do_turn(self, player, other_player):
-        if isinstance(player,NPC):
-            other_player.get_fired_upon(player.fire())
+        if isinstance(player, NPC):
+            target = player.fire()
+            result = other_player.get_fired_upon(target)
+            if result == 0:
+                print("{} missed!".format(target))
+            elif result == 1:
+                print("{} hit!".format(target), end='')
+                sunk_ship = other_player.update_ships_status()
+                if sunk_ship:
+                    print(" {} was sunk!".format(sunk_ship))
+                else:
+                    print("")
+                if other_player.is_game_over():
+                    return False
         else:
+            self.draw_board(player,other_player)
             while True:
+
                 target = input("Input target coordinates (ex: h5): ")
                 result = player.get_fired_upon(self.convert_coordinates(target))
                 if result == 0:
@@ -60,25 +77,25 @@ class Game:
                         return False
                 else:
                     print("{} is not a valid target coordinate.".format(target))
-            return True
+        return True
 
     def start_game(self):
         #Create players
-        self.players[0] = Player('name'='player1')
-        self.player[1] = NPC()
+        self.players[0] = Player(name='player1')
+        self.players[1] = NPC()
 
         #setup AI
         self.players[1]
 
         #place ships for both players
         self.set_ships(self.players[0])
-        self.set_ships(self.player[1])
+        self.set_ships(self.players[1])
 
         #determine who goes first
-        turn = random.randInt(0,1)
+        turn = random.randint(0, 1)
 
         while True:
-            if self.do_turn(self.players[turn],self.players[1-turn]):
+            if self.do_turn(self.players[turn], self.players[1-turn]):
                 turn = 1 - turn
             else:
                 break

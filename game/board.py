@@ -73,7 +73,7 @@ class Board(object):
         string_return = ''
         for i in range(self.x_max):
             if is_me:
-                self.board[i+(self.x_max*row)][1].show_me()
+                string_return += self.board[i+(self.x_max*row)][1].show_me()
             else:
                 string_return += self.board[i+(self.x_max*row)][1].show_other()
         string_return += '|'
