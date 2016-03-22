@@ -24,6 +24,10 @@ class Game:
                  tuple(['destroyer', 3]),
                  tuple(['patrol', 2])]
 
+        if isinstance(player,NPC):
+            player.generate_ship_placement(ships)
+            return
+
         for ship in ships:
             while True:
                 self.draw_board(player)
@@ -36,29 +40,35 @@ class Game:
                     print("Invalid placement")
 
     def do_turn(self, player, other_player):
-        while True:
-            target = input("Input target coordinates (ex: h5): ")
-            result = player.get_fired_upon(self.convert_coordinates(target))
-            if result == 0:
-                print("{} missed!".format(target))
-                break
-            elif result == 1:
-                print("{} hit!".format(target), end='')
-                sunk_ship = other_player.update_ships_status()
-                if sunk_ship:
-                    print(" {} was sunk!".format(sunk_ship))
+        if isinstance(player,NPC):
+            other_player.get_fired_upon(player.fire())
+        else:
+            while True:
+                target = input("Input target coordinates (ex: h5): ")
+                result = player.get_fired_upon(self.convert_coordinates(target))
+                if result == 0:
+                    print("{} missed!".format(target))
+                    break
+                elif result == 1:
+                    print("{} hit!".format(target), end='')
+                    sunk_ship = other_player.update_ships_status()
+                    if sunk_ship:
+                        print(" {} was sunk!".format(sunk_ship))
+                    else:
+                        print("")
+                    if other_player.is_game_over():
+                        return False
                 else:
-                    print("")
-                if other_player.is_game_over():
-                    return False
-            else:
-                print("{} is not a valid target coordinate.".format(target))
-        return True
+                    print("{} is not a valid target coordinate.".format(target))
+            return True
 
     def start_game(self):
         #Create players
         self.players[0] = Player('name'='player1')
         self.player[1] = NPC()
+
+        #setup AI
+        self.players[1]
 
         #place ships for both players
         self.set_ships(self.players[0])
