@@ -31,12 +31,16 @@ class Player(object):
 
     def update_ships_status(self):
         for ship in self.ships:
+            if ship.sunk_state:
+                continue
             sunk = True
             for location in ship.location:
                 if not self.board.get_index(location).is_hit:
                     sunk = False
             if sunk:
                 ship.sunk_state = True
+                return ship.name
+        return None
 
     def is_game_over(self):
         for ship in self.ships:
