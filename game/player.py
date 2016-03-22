@@ -11,7 +11,7 @@ class Player(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def place_ships(self, size, location, direction, name):
+    def place_ship(self, size, location, direction, name):
         if direction == 's':
             locations = [(location[0], y) for y in range(location[1], location[1]+size)]
         elif direction == 'n':
