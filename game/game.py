@@ -5,19 +5,35 @@ from player import Player
 
 class Game:
     def __init__(self, player1=None, player2=None):
-        self.players = [player1,player2]
+        self.players = [player1, player2]
 
-    def convert_coordinates(self, buffer):
-        x = int(buffer[1:]) - 1
-        y = ord(buffer[0])-97
+    def is_single_input(self, buffer):
+        buf_split = buffer.split()
+        return len(buf_split) == 1
+
+    def convert_coordinates_to_indeces(self, coor_str):
+        x = int(coor_str[1:]) - 1
+        y = ord(coor_str[0].lower())-97
         return tuple([x, y])
 
-    #TODO: draw column/row headers
+    def convert_indeces_to_coordinates(self, coor_tuple):
+        return chr(coor_tuple[1]+97) + str(coor_tuple[0]+1)
+
     def draw_board(self, player, player2=None):
+        print("         Yours                     Theirs")
+        header = ""
+        for idx in range(1, 11):
+            header += " {}".format(str(idx))
+
+        cur_row = "  {}    {}".format(header, header)
+        print("{}".format(cur_row))
+
         for idx in range(10):
-            cur_row = player.build_row(True, idx)
+            cur_row = "{} ".format(chr(idx+65))
+            cur_row += player.build_row(True, idx)
             if player2:
-                cur_row += "  {}".format(player2.build_row(False, idx))
+                cur_row += "  {} ".format(chr(idx+65))
+                cur_row += "{}".format(player2.build_row(False, idx))
             print("{}".format(cur_row))
 
     def place_ships(self, player):
@@ -27,16 +43,27 @@ class Game:
                  tuple(['destroyer', 3]),
                  tuple(['patrol', 2])]
 
-        if isinstance(player,NPC):
+        if isinstance(player, NPC):
             player.generate_ship_placement(ships)
             return
 
         for ship in ships:
+            self.draw_board(player)
+            print("Placing: {}".format(ship[0]))
+            print("Size: {}".format(ship[1]))
             while True:
-                self.draw_board(player)
+
                 sbuffer = input("Input starting coordinate (ex: c6): ")
-                start_loc = self.convert_coordinates(sbuffer)
+                if not self.is_single_input(sbuffer):
+                    print("Input must be a single word")
+                    continue
+
+                start_loc = self.convert_coordinates_to_indeces(sbuffer)
                 direction = input("Input direction from starting point (N/W/S/E): ")
+                if not self.is_single_input(sbuffer):
+                    print("Input must be a single word")
+                    continue
+
                 if player.place_ship(ship[1], start_loc, direction.lower(), ship[0]):
                     break
                 else:
@@ -47,6 +74,11 @@ class Game:
         if isinstance(player, NPC):
             target = player.fire()
             result = other_player.get_fired_upon(target)
+            target = self.convert_indeces_to_coordinates(target)
+
+            # prefix output with player name
+            print("{}: ".format(player.name), end='')
+
             if result == 0:
                 print("{} missed!".format(target))
             else:
@@ -62,7 +94,15 @@ class Game:
             self.draw_board(player, other_player)
             while True:
                 target = input("Input target coordinates (ex: h5): ")
-                result = other_player.get_fired_upon(self.convert_coordinates(target))
+                if not self.is_single_input(target):
+                    print("Error: input must be a single word")
+                    continue
+
+                result = other_player.get_fired_upon(self.convert_coordinates_to_indeces(target))
+
+                # prefix output with player name
+                print("{}: ".format(player.name), end='')
+
                 if result == 0:
                     print("{} missed!".format(target))
                     break
@@ -84,9 +124,6 @@ class Game:
         # Create players
         self.players[0] = Player(name='player1')
         self.players[1] = NPC()
-
-        # setup AI
-        self.players[1]
 
         # place ships for both players
         self.place_ships(self.players[0])
