@@ -122,11 +122,19 @@ class Game:
 
     def start_game(self):
         # Create players
-        self.players[0] = Player(name='player1')
+        self.players[0] = Player(name=input('Input your name: '))
         self.players[1] = NPC()
 
         # place ships for both players
-        self.place_ships(self.players[0])
+        if input("[p]lace ships or [r]andomize positions?: ").lower() == 'p':
+            self.place_ships(self.players[0])
+        else:
+            temp = NPC()
+            self.place_ships(temp)
+            self.players[0].board = temp.board
+            self.players[0].ships = temp.ships
+
+        # place NPCs ships
         self.place_ships(self.players[1])
 
         # determine who goes first
