@@ -3,9 +3,9 @@ from ship import Ship
 
 
 class Player(object):
-    ships = []
 
     def __init__(self, board_size=(10,10), **kwargs):
+        self.ships = []
         self.board = Board(board_size)
         self.name = 'No Name'
         for key, value in kwargs.items():
@@ -27,7 +27,15 @@ class Player(object):
             return False
 
     def get_fired_upon(self, location):
-        return self.board.fire(location)
+
+        success = self.board.fire(location)
+        if success == 1:
+            return next(ship for ship in self.ships if list(filter(lambda x: x == location, ship.location)))
+            # for ship in self.ships:
+            #    if next((loc for loc in ship.location if loc == location)):
+            #        return ship.name
+        else:
+            return success
 
     def update_ships_status(self):
         for ship in self.ships:

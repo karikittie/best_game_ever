@@ -17,10 +17,10 @@ class Game:
         for idx in range(10):
             cur_row = player.build_row(True, idx)
             if player2:
-                cur_row += " {}".format(player2.build_row(False, idx))
+                cur_row += "  {}".format(player2.build_row(False, idx))
             print("{}".format(cur_row))
 
-    def set_ships(self, player):
+    def place_ships(self, player):
         ships = [tuple(['carrier', 5]),
                  tuple(['battleship', 4]),
                  tuple(['submarine', 3]),
@@ -42,56 +42,57 @@ class Game:
                 else:
                     print("Invalid placement")
 
+    #TODO: code is repeated, should be refactered
     def do_turn(self, player, other_player):
         if isinstance(player, NPC):
             target = player.fire()
             result = other_player.get_fired_upon(target)
             if result == 0:
                 print("{} missed!".format(target))
-            elif result == 1:
+            else:
                 print("{} hit!".format(target), end='')
                 sunk_ship = other_player.update_ships_status()
                 if sunk_ship:
                     print(" {} was sunk!".format(sunk_ship))
                 else:
-                    print("")
+                    print(" {} took damage!".format(result.name))
                 if other_player.is_game_over():
                     return False
         else:
-            self.draw_board(player,other_player)
+            self.draw_board(player, other_player)
             while True:
-
                 target = input("Input target coordinates (ex: h5): ")
-                result = player.get_fired_upon(self.convert_coordinates(target))
+                result = other_player.get_fired_upon(self.convert_coordinates(target))
                 if result == 0:
                     print("{} missed!".format(target))
                     break
-                elif result == 1:
+                elif result == 2:
+                    print("{} is not a valid target coordinate.".format(target))
+                else:
                     print("{} hit!".format(target), end='')
                     sunk_ship = other_player.update_ships_status()
                     if sunk_ship:
                         print(" {} was sunk!".format(sunk_ship))
                     else:
-                        print("")
+                        print(" {} took damage!".format(result.name))
                     if other_player.is_game_over():
                         return False
-                else:
-                    print("{} is not a valid target coordinate.".format(target))
+                    break
         return True
 
     def start_game(self):
-        #Create players
+        # Create players
         self.players[0] = Player(name='player1')
         self.players[1] = NPC()
 
-        #setup AI
+        # setup AI
         self.players[1]
 
-        #place ships for both players
-        self.set_ships(self.players[0])
-        self.set_ships(self.players[1])
+        # place ships for both players
+        self.place_ships(self.players[0])
+        self.place_ships(self.players[1])
 
-        #determine who goes first
+        # determine who goes first
         turn = random.randint(0, 1)
 
         while True:

@@ -7,7 +7,7 @@ class Ship:
         self.location = location
 
     def __str__(self):
-        print("Ship name: {}".format(self.name))
+        return "Ship name: {}".format(self.name)
 
     def get_location(self):
         return self.location

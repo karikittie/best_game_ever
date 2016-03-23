@@ -7,6 +7,7 @@ from player import Player
 
 class NPC(Player):
     def __init__(self, size=(10,10)):
+        self.ships = []
         self.board = Board(size)
         self.name = 'Artificial Stupidity'
         self.spot_list = [(x,y) for x in range(size[0]) for y in range(size[1])]
@@ -23,4 +24,4 @@ class NPC(Player):
                     break
 
     def fire(self):
-        return self.spot_list.pop(random.randint(0, len(self.spot_list)))
+        return self.spot_list.pop(random.randint(0, len(self.spot_list)-1))
